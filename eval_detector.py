@@ -7,7 +7,24 @@ def compute_iou(box_1, box_2):
     This function takes a pair of bounding boxes and returns intersection-over-
     union (IoU) of two bounding boxes.
     '''
-    iou = np.random.random()
+    x1 = np.maximum(box_1[0], box_2[0])
+    y1 = np.maximum(box_1[1], box_2[1])
+    x2 = np.minimum(box_1[2], box_2[2])
+    y2 = np.minimum(box_1[3], box_2[3])
+
+    dx = x2 - x1
+    dy = y2 - y1
+
+    if dx < 0 or dy < 0:
+        return 0.0
+
+    intersection = dx * dy
+    area_1 = (box_1[2] - box_1[0]) * (box_1[3] - box_1[1])
+    area_2 = (box_2[2] - box_2[0]) * (box_2[3] - box_2[1])
+    union = area_1 + area_2 - intersection
+
+    # Add a little epsilon for stability
+    iou = intersection / (union + 1e-9)
     
     assert (iou >= 0) and (iou <= 1.0)
 
@@ -46,11 +63,11 @@ def compute_counts(preds, gts, iou_thr=0.5, conf_thr=0.5):
     return TP, FP, FN
 
 # set a path for predictions and annotations:
-preds_path = '../data/hw02_preds'
-gts_path = '../data/hw02_annotations'
+preds_path = './data/hw02_preds'
+gts_path = './data/hw02_annotations'
 
 # load splits:
-split_path = '../data/hw02_splits'
+split_path = './data/hw02_splits'
 file_names_train = np.load(os.path.join(split_path,'file_names_train.npy'))
 file_names_test = np.load(os.path.join(split_Path,'file_names_test.npy'))
 
